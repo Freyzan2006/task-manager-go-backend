@@ -17,7 +17,6 @@ func NewFlags() *Flags {
     flag.StringVar(&host, "host", "127.0.0.1", "Хост для запуска сервера")
     flag.StringVar(&port, "port", "8080", "Порт на котором будет работать сервер")
     flag.StringVar(&database, "db", "test.db", "Путь к базе данных")
-    flag.StringVar(&database, "database", "test.db", "Путь к базе данных")
     flag.StringVar(&protocol, "protocol", "http", "Протокол (http, https, и т.д)")
 
     flag.Parse()

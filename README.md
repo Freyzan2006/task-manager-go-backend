@@ -1,11 +1,20 @@
 # task-manager-go-backend
 
-![task-manager-go-backend](./public/intro.png)
+![task-manager-go-backend](./public/intro.jpg)
 
 # Описание 
 task-manager-go-backend - это REST API для управления задачами. 
 Позволяет создавать, обновлять, удалять и получать задачи.
 
+# Настроика окружение
+Флаги:
+```bash
+mode - Режим работы сервера (debug, release)
+port - Порт, на котором будет запущен сервер
+host - Хост, на котором будет запущен сервер
+db - Путь к базе данных
+protocol - Протокол (http, https, и т.д)
+```
 
 # Установка & Запуск(Native)
 
