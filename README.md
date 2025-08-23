@@ -1,6 +1,6 @@
 # task-manager-go-backend
 
-![task-manager-go-backend](./public/intro.jpg)
+![task-manager-go-backend](./public/intro.png)
 
 # Описание 
 task-manager-go-backend - это REST API для управления задачами. 
