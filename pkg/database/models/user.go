@@ -1,8 +1,9 @@
 package models
 
-type UserModel struct {
+type User struct {
     ID           uint        `gorm:"primaryKey"`
+    Email        string      `gorm:"unique;not null"`
     Username     string      `gorm:"unique;not null"`
     PasswordHash string      `gorm:"not null"`
-    Tasks        []TaskModel `gorm:"foreignKey:UserID"`
+    Tasks        []Task      `gorm:"foreignKey:UserID"`
 }

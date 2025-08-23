@@ -1,6 +1,10 @@
 package database
 
 import (
+    "log"
+)
+
+import (
     "gorm.io/driver/sqlite"
     "gorm.io/gorm"
 )
@@ -30,15 +34,106 @@ func (db *DB) ConnectSQLite() error {
     return nil
 }
 
-func (db *DB) AutoMigrate() error {
-    return db.database.AutoMigrate(
-        &models.UserModel{},
-        &models.TaskModel{},
-        &models.TagModel{},
-        &models.TaskTag{},
-    )
+func (db *DB) GetDB() *gorm.DB {
+    return db.database
 }
 
+func (db *DB) AutoMigrate() error {
+    err := db.database.AutoMigrate(
+        &models.User{},
+        &models.Task{},
+        &models.Tag{},
+        &models.TaskTag{},
+    )
+    if err != nil {
+        return err
+    }
+
+    
+    return db.Seed()
+}
+
+func (db *DB) Seed() error {
+    // Проверяем пользователей
+    var count int64
+    db.database.Model(&models.User{}).Count(&count)
+    if count == 0 {
+        users := []models.User{
+            {Username: "Admin", Email: "admin@example.com", PasswordHash: "admin"},
+            {Username: "Demo User", Email: "demo@example.com", PasswordHash: "demo"},
+        }
+        if err := db.database.Create(&users).Error; err != nil {
+            return err
+        }
+    }
+
+    // Проверяем теги
+    db.database.Model(&models.Tag{}).Count(&count)
+    if count == 0 {
+        tags := []models.Tag{
+            {Name: "Important"},
+            {Name: "Urgent"},
+            {Name: "Optional"},
+        }
+        if err := db.database.Create(&tags).Error; err != nil {
+            return err
+        }
+    }
+
+    // Проверяем задачи 
+    db.database.Model(&models.Task{}).Count(&count)
+    if count == 0 {
+        var tags []models.Tag
+        db.database.Find(&tags)
+
+        tasks := []models.Task{
+            {
+                UserID: 1,
+                Title: "Task 1",
+                Description: "Description 1",
+                Status: "todo",
+                Priority: 0,
+                Tags: []models.Tag{tags[0]}, // Important
+            },
+            {
+                UserID: 1,
+                Title: "Task 2",
+                Description: "Description 2",
+                Status: "in_progress",
+                Priority: 1,
+                Tags: []models.Tag{tags[1]}, // Urgent
+            },
+            {
+                UserID: 1,
+                Title: "Task 3",
+                Description: "Description 3",
+                Status: "done",
+                Priority: 2,
+                Tags: []models.Tag{tags[2]}, // Optional
+            },
+        }
+
+        for i := range tasks {
+            if err := db.database.Create(&tasks[i]).Error; err != nil {
+                return err
+            }
+            for _, tag := range tasks[i].Tags {
+                if err := db.database.Model(&tasks[i]).Association("Tags").Append(&tag); err != nil {
+                    return err
+                }
+            }
+        }
+
+        // 🔑 теперь тянем с Preload, иначе в структуре будет пусто
+        var checkTasks []models.Task
+        if err := db.database.Preload("Tags").Find(&checkTasks).Error; err != nil {
+            return err
+        }
+        log.Printf("✅ Seeded tasks with tags: %+v\n", checkTasks)
+    }
+
+    return nil
+}
 
 
 // -- users

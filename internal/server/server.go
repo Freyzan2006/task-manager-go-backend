@@ -2,7 +2,10 @@ package server
 
 import (
 	"log"
-	"net/http"
+)
+
+import (
+	"task-manager/internal/modules/task"
 )
 
 import "github.com/gin-gonic/gin"
@@ -22,6 +25,32 @@ func NewServer(cfg *ConfigServer) Server {
 }
 
 func (s *server) Run() {
+	s.modeServer();
+	s.connectInfrastructure();
+
+
+	router := gin.Default()
+
+
+	taskHandler := task.InitModule(s.cfg.Database.GetDB())
+	taskHandler.RegisterRoutes(router)
+
+
+	log.Printf("✅ Server running at %s://%s", s.cfg.Protocol, s.cfg.Addr)
+	router.Run(s.cfg.Addr) 
+}
+
+func (s *server) connectInfrastructure() {
+	if err := s.cfg.Database.ConnectSQLite(); err != nil {
+        log.Fatal("DB connect error:", err)
+    }
+
+    if err := s.cfg.Database.AutoMigrate(); err != nil {
+        log.Fatal("Migration error:", err)
+    }
+}
+
+func (s *server) modeServer() {
 	switch s.cfg.Mode {
 	case "release":
 		gin.SetMode(gin.ReleaseMode)
@@ -30,21 +59,5 @@ func (s *server) Run() {
 	default:
 		gin.SetMode(gin.DebugMode)
 	}
-
-    if err := s.cfg.Database.ConnectSQLite(); err != nil {
-        log.Fatal("DB connect error:", err)
-    }
-
-    if err := s.cfg.Database.AutoMigrate(); err != nil {
-        log.Fatal("Migration error:", err)
-    }
-
-    r := gin.Default()
-    r.GET("/ping", func(c *gin.Context) {
-        c.JSON(http.StatusOK, gin.H{"message": "pong"})
-    })
-
-
-	log.Printf("✅ Server running at %s://%s", s.cfg.Protocol, s.cfg.Addr)
-	r.Run(s.cfg.Addr) 
 }
+
