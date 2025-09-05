@@ -1,30 +1,29 @@
 package main
 
 import (
-    "log"
-    "fmt"
+	_ "task-manager/docs"
+
+	"task-manager/internal/core"
+	"task-manager/internal/core/logger"
+	"task-manager/internal/server"
 )
 
-import (
-	"task-manager/pkg/database"
-    "task-manager/internal/server"
-    "task-manager/pkg/console"
-)
-
+// @title           Task manager
+// @version         1.0
+// @description     Микросервис для управления задачами
+// @host            localhost:${port}
+// @BasePath        /api/v1
 func main() {
-    flags := console.NewFlags()
-    log.Println("✅ Flags created successfully")
+	// Загружаем конфиг и сразу создаём объект базы внутри
+	cfg := core.NewConfig()
+	logger := logger.New("app.log", "debug", "task-manager-go-backend", cfg.Mode)
+	logger.Info("✅ Config loaded successfully")
 
-    db := database.NewDB(flags.Database)
-    log.Println("✅ Database connected and migrated successfully")
-
-    addr := fmt.Sprintf("%s:%s", flags.Host, flags.Port)
-    cfg := server.NewConfigServer(flags.Mode, db, addr, flags.Host, flags.Port, flags.Protocol)
-    log.Println("✅ Config created successfully")
-
-    server := server.NewServer(cfg)
-    server.Run()
-    log.Println("✅ Server started successfully")
-
-    
+	// Создаём и запускаем сервер
+	srv := server.New(cfg, logger)
+	if err := srv.Run(); err != nil {
+		logger.Fatalf("❌ failed to run server: %v", err)
+	}
 }
+
+// task-manager-go-backend/internal/server/engine.go:49

@@ -1,0 +1,97 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Микросервис для управления задачами",
+        "title": "Task manager",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:${port}",
+    "basePath": "/api/v1",
+    "paths": {
+        "/api/v1/tasks": {
+            "get": {
+                "description": "Возвращает список всех задач пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Получить список задач",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Task"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Tag": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Task": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-09-05T14:25:00Z"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Сходить в магазин за хлебом"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "priority": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "status": {
+                    "type": "string",
+                    "example": "todo"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Tag"
+                    }
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Купить хлеб"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 42
+                }
+            }
+        }
+    }
+}

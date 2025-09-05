@@ -1,0 +1,66 @@
+basePath: /api/v1
+definitions:
+  models.Tag:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Task:
+    properties:
+      created_at:
+        example: "2025-09-05T14:25:00Z"
+        type: string
+      description:
+        example: Сходить в магазин за хлебом
+        type: string
+      id:
+        example: 1
+        type: integer
+      priority:
+        example: 1
+        type: integer
+      status:
+        example: todo
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/models.Tag'
+        type: array
+      title:
+        example: Купить хлеб
+        type: string
+      user_id:
+        example: 42
+        type: integer
+    type: object
+host: localhost:${port}
+info:
+  contact: {}
+  description: Микросервис для управления задачами
+  title: Task manager
+  version: "1.0"
+paths:
+  /api/v1/tasks:
+    get:
+      description: Возвращает список всех задач пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Task'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список задач
+      tags:
+      - tasks
+swagger: "2.0"

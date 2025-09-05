@@ -14,9 +14,18 @@ func NewHandler(service Service) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(router *gin.Engine) {
-	router.GET("/tasks", h.getTasks)
+	router.GET("/api/v1/tasks", h.getTasks)
 }
 
+
+// getTasks godoc
+// @Summary      Получить список задач
+// @Description  Возвращает список всех задач пользователя
+// @Tags         tasks
+// @Produce      json
+// @Success      200  {array}  models.Task
+// @Failure      500  {object}  map[string]string
+// @Router       /api/v1/tasks [get]
 func (h *Handler) getTasks(c *gin.Context) {
 	tasks, err := h.service.GetTasks()
 	if err != nil {

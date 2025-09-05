@@ -1,16 +1,15 @@
 package models
 
-import (
-	"time"
-)
+import "time"
 
 type Task struct {
-    ID          uint      `gorm:"primaryKey"`
-    UserID      uint      `gorm:"not null;index"`
-    Title       string    `gorm:"not null"`
-    Description string
-    Status      string    `gorm:"type:text;default:'todo'"`
-    Priority    int
-    CreatedAt   time.Time `gorm:"autoCreateTime"`
-    Tags        []Tag     `gorm:"many2many:task_tags;joinForeignKey:TaskID;joinReferences:TagID"`
+	ID          uint      `json:"id" gorm:"primaryKey" example:"1"`
+	UserID      uint      `json:"user_id" gorm:"not null;index" example:"42"`
+	Title       string    `json:"title" gorm:"not null" example:"Купить хлеб"`
+	Description string    `json:"description,omitempty" example:"Сходить в магазин за хлебом"`
+	Status      string    `json:"status" gorm:"type:text;default:'todo'" example:"todo"`
+	Priority    int       `json:"priority" example:"1"`
+	CreatedAt   time.Time `json:"created_at" gorm:"autoCreateTime" example:"2025-09-05T14:25:00Z"`
+	Tags        []Tag     `json:"tags" gorm:"many2many:task_tags;joinForeignKey:TaskID;joinReferences:TagID"`
 }
+
